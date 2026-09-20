@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoSort AI — Waste Segregation Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F5F0;
+    --surface: #FFFFFF;
+    --surface-2: #EEF3E9;
+    --forest: #1F4620;
+    --forest-2: #2C5F2D;
+    --moss: #8FB84E;
+    --moss-soft: #DCEAC7;
+    --gold: #C98A2E;
+    --text: #23291F;
+    --text-muted: #63705C;
+    --border: #E1E4D7;
+    --bubble-user: #2C5F2D;
+    --bubble-user-text: #FFFFFF;
+    --bubble-bot: #EEF3E9;
+    --bubble-bot-text: #23291F;
+    --shadow: 0 10px 30px rgba(31, 70, 32, 0.10);
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10160F;
+      --surface: #17201A;
+      --surface-2: #1D2A20;
+      --forest: #A9D18D;
+      --forest-2: #8FB84E;
+      --moss: #8FB84E;
+      --moss-soft: #24331F;
+      --gold: #E0AA55;
+      --text: #EAF0E4;
+      --text-muted: #9DAF95;
+      --border: #29352A;
+      --bubble-user: #3E6B3A;
+      --bubble-user-text: #F3F8ED;
+      --bubble-bot: #1D2A20;
+      --bubble-bot-text: #EAF0E4;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10160F;
+    --surface: #17201A;
+    --surface-2: #1D2A20;
+    --forest: #A9D18D;
+    --forest-2: #8FB84E;
+    --moss: #8FB84E;
+    --moss-soft: #24331F;
+    --gold: #E0AA55;
+    --text: #EAF0E4;
+    --text-muted: #9DAF95;
+    --border: #29352A;
+    --bubble-user: #3E6B3A;
+    --bubble-user-text: #F3F8ED;
+    --bubble-bot: #1D2A20;
+    --bubble-bot-text: #EAF0E4;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 620px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0 18px;
+  }
+
+  .top {
+    padding: 28px 4px 16px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--forest-2);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--moss);
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 1.1;
+    margin: 10px 0 6px;
+    color: var(--text);
+  }
+
+  .sub {
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 46ch;
+    margin: 0;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 18px 0 6px;
+  }
+
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13.5px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s ease, transform 0.1s ease;
+  }
+  .chip:hover { border-color: var(--moss); }
+  .chip:active { transform: scale(0.97); }
+
+  .chat-shell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin: 16px 0 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    min-height: 420px;
+  }
+
+  .chat-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-behavior: smooth;
+  }
+
+  .row { display: flex; }
+  .row.user { justify-content: flex-end; }
+  .row.bot { justify-content: flex-start; }
+
+  .bubble {
+    max-width: 82%;
+    padding: 11px 14px;
+    border-radius: 14px;
+    font-size: 14.5px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+  }
+  .row.user .bubble {
+    background: var(--bubble-user);
+    color: var(--bubble-user-text);
+    border-bottom-right-radius: 4px;
+  }
+  .row.bot .bubble {
+    background: var(--bubble-bot);
+    color: var(--bubble-bot-text);
+    border-bottom-left-radius: 4px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+  .tag.dry { background: #DCEAC7; color: #34551C; }
+  .tag.wet { background: #F3E4C4; color: #7A5410; }
+  .tag.hazard { background: #F4D2CE; color: #8A2E22; }
+  .tag.other { background: #DDE1EA; color: #38415C; }
+
+  .typing {
+    display: inline-flex;
+    gap: 4px;
+    padding: 12px 14px;
+  }
+  .typing span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-muted);
+    opacity: 0.5;
+    animation: blink 1.2s infinite ease-in-out;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 0.9; } }
+
+  .composer {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .composer input {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14.5px;
+    font-family: inherit;
+    outline: none;
+  }
+  .composer input:focus { border-color: var(--moss); }
+
+  .composer button {
+    background: var(--forest-2);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 0 18px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .composer button:active { transform: scale(0.98); }
+
+  footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 0 4px 22px;
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top">
+    <span class="eyebrow"><span class="dot"></span>EcoSort AI · by Komal</span>
+    <h1>Which bin does this go in?</h1>
+    <p class="sub">Type any household item and get the correct bin, with the reason — grounded in local segregation rules, not guesswork.</p>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="chat-shell">
+    <div class="chat-log" id="log"></div>
+    <div class="composer">
+      <input id="input" type="text" placeholder="e.g. used milk tetra pack" autocomplete="off" />
+      <button id="send">Ask</button>
+    </div>
+  </div>
+
+  <footer>Built by Komal · AI + Sustainability Internship prototype · answers are illustrative, not official municipal guidance.</footer>
+</div>
+
+<script>
+(function () {
+  const RULES = [
+    { keys: ["tetra pack", "tetrapack", "milk carton", "juice carton", "carton"], bin: "Dry / Recyclable", tag: "dry",
+      reason: "Tetra packs and cartons are recyclable dry waste. Rinse and flatten before placing them in the blue/dry waste bin." },
+    { keys: ["plastic bottle", "pet bottle", "water bottle"], bin: "Dry / Recyclable", tag: "dry",
+      reason: "Clean plastic bottles are recyclable. Rinse, remove the cap if your local facility asks, and place in the dry waste bin." },
+    { keys: ["glass bottle", "glass jar", "broken glass"], bin: "Dry / Recyclable (wrap sharp edges)", tag: "dry",
+      reason: "Glass is recyclable. Wrap broken pieces in paper or thick plastic and label them, so handlers aren't hurt." },
+    { keys: ["newspaper", "paper", "cardboard", "carton box", "magazine"], bin: "Dry / Recyclable", tag: "dry",
+      reason: "Clean paper and cardboard are recyclable. Keep them dry and free of food residue." },
+    { keys: ["metal can", "tin can", "aluminium", "aluminum can"], bin: "Dry / Recyclable", tag: "dry",
+      reason: "Metal cans are recyclable. A quick rinse keeps them from contaminating other dry waste." },
+    { keys: ["banana peel", "vegetable peel", "fruit peel", "food scraps", "leftover food", "tea leaves", "coffee grounds", "eggshell"], bin: "Wet / Organic", tag: "wet",
+      reason: "This is biodegradable kitchen waste — it belongs in the wet/organic bin, where it can be composted." },
+    { keys: ["tissue", "napkin", "paper towel"], bin: "Wet / Organic", tag: "wet",
+      reason: "Used tissues are wet waste, not recyclable dry waste — keep them out of the paper/recycling stream." },
+    { keys: ["garden waste", "leaves", "flowers", "plant waste"], bin: "Wet / Organic", tag: "wet",
+      reason: "Garden and plant waste is compostable — it goes with wet/organic waste." },
+    { keys: ["battery", "batteries"], bin: "Hazardous — special drop-off", tag: "hazard",
+      reason: "Batteries contain hazardous materials. Don't mix with household bins — use a designated e-waste/battery collection point." },
+    { keys: ["medicine", "expired medicine", "tablets", "syringe"], bin: "Hazardous — special drop-off", tag: "hazard",
+      reason: "Medicines need safe disposal to avoid contaminating soil and water — check for a pharmacy take-back point." },
+    { keys: ["bulb", "cfl", "tube light", "led bulb"], bin: "Hazardous — special drop-off", tag: "hazard",
+      reason: "Bulbs (especially CFL/tube lights) contain trace hazardous material — take them to an e-waste point, not the regular bin." },
+    { keys: ["paint", "paint can", "thinner", "chemical"], bin: "Hazardous — special drop-off", tag: "hazard",
+      reason: "Paints and chemicals are hazardous waste — never pour down the drain or mix with household waste." },
+    { keys: ["e-waste", "phone", "charger", "wire", "electronic", "laptop", "cable"], bin: "Hazardous / E-waste — special drop-off", tag: "hazard",
+      reason: "Electronics are e-waste. Most cities have authorised e-waste collection centres — never bin them with regular waste." },
+    { keys: ["diaper", "nappy", "sanitary pad", "sanitary napkin", "mask", "face mask"], bin: "Reject waste (wrap before disposal)", tag: "other",
+      reason: "This is non-recyclable reject waste. Wrap it well — ideally in paper — before placing it in the bin, to protect handlers." },
+    { keys: ["thermocol", "styrofoam", "ceramic", "mirror", "broken plate"], bin: "Reject waste", tag: "other",
+      reason: "This doesn't fit standard recycling or compost streams — it goes in reject/non-recyclable waste." },
+  ];
+
+  const log = document.getElementById("log");
+  const input = document.getElementById("input");
+  const sendBtn = document.getElementById("send");
+  const chipsWrap = document.getElementById("chips");
+
+  const STARTERS = ["milk tetra pack", "banana peel", "used battery", "broken glass bottle", "old phone charger"];
+  STARTERS.forEach(function (label) {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = label;
+    b.addEventListener("click", function () { ask(label); });
+    chipsWrap.appendChild(b);
+  });
+
+  function addRow(text, who) {
+    const row = document.createElement("div");
+    row.className = "row " + who;
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    log.appendChild(row);
+    log.scrollTop = log.scrollHeight;
+    return bubble;
+  }
+
+  function addBotAnswer(rule, matchedText) {
+    const row = document.createElement("div");
+    row.className = "row bot";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+
+    if (rule) {
+      const tag = document.createElement("span");
+      tag.className = "tag " + rule.tag;
+      tag.textContent = rule.bin;
+      bubble.appendChild(tag);
+      bubble.appendChild(document.createElement("br"));
+      bubble.appendChild(document.createTextNode(rule.reason));
+    } else {
+      bubble.textContent = "I don't have a specific rule for \u201c" + matchedText + "\u201d yet in this demo. As a rule of thumb: food and garden scraps go in wet waste, clean paper/plastic/metal/glass go in dry waste, and anything electronic, chemical, or medical needs a special hazardous drop-off point — never the regular bin.";
+    }
+    row.appendChild(bubble);
+    log.appendChild(row);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function showTyping() {
+    const row = document.createElement("div");
+    row.className = "row bot";
+    row.id = "typing-row";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble typing";
+    bubble.innerHTML = "<span></span><span></span><span></span>";
+    row.appendChild(bubble);
+    log.appendChild(row);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function removeTyping() {
+    const row = document.getElementById("typing-row");
+    if (row) row.remove();
+  }
+
+  function findRule(text) {
+    const t = text.toLowerCase();
+    for (const rule of RULES) {
+      for (const key of rule.keys) {
+        if (t.indexOf(key) !== -1) return rule;
+      }
+    }
+    return null;
+  }
+
+  function ask(text) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    addRow(trimmed, "user");
+    input.value = "";
+    showTyping();
+    const rule = findRule(trimmed);
+    setTimeout(function () {
+      removeTyping();
+      addBotAnswer(rule, trimmed);
+    }, 550 + Math.random() * 350);
+  }
+
+  sendBtn.addEventListener("click", function () { ask(input.value); });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") ask(input.value);
+  });
+
+  // Opening message
+  (function greet() {
+    const row = document.createElement("div");
+    row.className = "row bot";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = "Hi! Tell me what you're throwing away — like \u201cmilk tetra pack\u201d or \u201cbanana peel\u201d — and I'll tell you which bin it belongs in and why.";
+    row.appendChild(bubble);
+    log.appendChild(row);
+  })();
+})();
+</script>
+</body>
+</html>
