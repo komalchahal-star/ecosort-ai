@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EcoSort AI — Presentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F5F0;
+    --surface: #FFFFFF;
+    --forest-dark: #1F4620;
+    --forest: #2C5F2D;
+    --moss: #97BC62;
+    --moss-soft: #DCEAC7;
+    --gold: #C98A2E;
+    --text: #23291F;
+    --text-muted: #63705C;
+    --border: #E1E4D7;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10160F; --surface: #17201A; --forest-dark: #A9D18D; --forest: #8FB84E;
+      --moss: #8FB84E; --moss-soft: #24331F; --gold: #E0AA55; --text: #EAF0E4;
+      --text-muted: #9DAF95; --border: #29352A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10160F; --surface: #17201A; --forest-dark: #A9D18D; --forest: #8FB84E;
+    --moss: #8FB84E; --moss-soft: #24331F; --gold: #E0AA55; --text: #EAF0E4;
+    --text-muted: #9DAF95; --border: #29352A;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: "Inter", sans-serif; overflow: hidden; }
+
+  .deck { position: relative; width: 100%; height: 100%; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    padding: clamp(24px, 5vw, 72px) clamp(20px, 7vw, 96px);
+    overflow-y: auto;
+  }
+  .slide.active { display: flex; }
+  .slide.dark { background: var(--forest-dark); color: #fff; }
+  .slide.dark .muted { color: #cfe0c9; }
+  .slide.light { background: var(--bg); }
+
+  .eyebrow { font-size: 12.5px; font-weight: 700; letter-spacing: 0.04em; color: var(--moss); }
+  .slide.light .eyebrow { color: var(--forest); }
+
+  h1.big { font-family: "Fraunces", serif; font-weight: 700; font-size: clamp(34px, 6vw, 58px); margin: 10px 0 8px; line-height: 1.05; }
+  h2.title { font-family: "Fraunces", serif; font-weight: 600; font-size: clamp(26px, 4vw, 38px); margin: 0 0 6px; color: var(--forest-dark); }
+  .slide.dark h2.title { color: #fff; }
+  .rule { width: 56px; height: 3px; background: var(--gold); border: none; margin: 4px 0 22px; }
+
+  p.lead { font-size: clamp(15px, 2vw, 19px); line-height: 1.5; max-width: 62ch; color: var(--text); }
+  .slide.dark p.lead { color: #f0f5ea; }
+  .muted { color: var(--text-muted); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px; }
+  @media (max-width: 720px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px; box-shadow: 0 8px 24px rgba(31,70,32,0.08);
+  }
+  .card.solid { background: var(--forest-dark); color: #fff; border: none; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; font-family: "Fraunces", serif; }
+  .card p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--text-muted); }
+  .card.solid p { color: #dceac7; }
+  .stat { font-family: "Fraunces", serif; font-weight: 700; font-size: 36px; color: var(--forest); margin-bottom: 4px; }
+
+  .pill { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; padding: 3px 10px; border-radius: 999px; background: var(--moss-soft); color: var(--forest-dark); margin-bottom: 10px; }
+
+  ul.clean { margin: 10px 0 0; padding-left: 18px; }
+  ul.clean li { margin-bottom: 8px; font-size: 14.5px; line-height: 1.4; }
+
+  .icon-row { display: flex; align-items: flex-start; gap: 14px; }
+  .icon-circle {
+    width: 46px; height: 46px; min-width: 46px; border-radius: 50%; background: var(--moss);
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 700;
+  }
+
+  .flow { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+  .flow .step { flex: 1; min-width: 150px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+  .flow .step .num { width: 34px; height: 34px; border-radius: 50%; background: var(--forest); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-bottom: 10px; }
+
+  .bars { display: flex; align-items: flex-end; gap: 26px; height: 180px; margin-top: 10px; }
+  .bar { width: 70px; border-radius: 8px 8px 0 0; display: flex; align-items: flex-start; justify-content: center; color: #fff; font-weight: 700; padding-top: 6px; font-family: "Fraunces", serif; }
+  .bar-label { text-align: center; font-size: 12.5px; color: var(--text-muted); margin-top: 8px; }
+
+  .cta-link {
+    display: inline-block; margin-top: 16px; background: var(--forest); color: #fff; text-decoration: none;
+    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px;
+  }
+
+  .nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px clamp(16px, 5vw, 40px) calc(12px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to top, rgba(0,0,0,0.06), transparent);
+    z-index: 10;
+  }
+  .nav button {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    width: 40px; height: 40px; border-radius: 50%; font-size: 16px; cursor: pointer;
+  }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  .dots { display: flex; gap: 6px; }
+  .dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--border); cursor: pointer; }
+  .dots span.on { background: var(--forest); width: 18px; border-radius: 4px; }
+  .counter { font-size: 12.5px; color: var(--text-muted); min-width: 44px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <section class="slide dark active">
+    <span class="eyebrow">SDG 12 · RESPONSIBLE CONSUMPTION &amp; PRODUCTION</span>
+    <h1 class="big">EcoSort AI</h1>
+    <p class="lead">An AI-powered waste segregation assistant for everyday households.</p>
+    <hr class="rule">
+    <p class="muted" style="margin-top:auto; font-size:14px;">By Komal &nbsp;·&nbsp; AI + Sustainability Virtual Internship &nbsp;·&nbsp; 1M1B – IBM SkillsBuild</p>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">SDG ALIGNMENT</span>
+    <h2 class="title">Two goals, one habit change</h2>
+    <hr class="rule">
+    <div class="grid2">
+      <div class="card solid">
+        <span class="pill" style="background:#3a5c30;color:#dceac7;">PRIMARY</span>
+        <h3 style="color:#fff;">SDG 12 — Responsible Consumption &amp; Production</h3>
+        <p>Most household waste is never segregated correctly at source, undermining recycling and polluting soil and water.</p>
+      </div>
+      <div class="card">
+        <span class="pill">SECONDARY</span>
+        <h3>SDG 11 — Sustainable Cities &amp; Communities</h3>
+        <p>Better source segregation reduces the burden on municipal collection, supporting cleaner, better-managed communities.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">THE PROBLEM</span>
+    <h2 class="title">How might we use AI to guide households in sorting waste correctly?</h2>
+    <hr class="rule">
+    <div class="grid3">
+      <div class="card"><div class="stat">60%+</div><p>of household waste in many Indian cities is mixed, not segregated at source</p></div>
+      <div class="card"><div class="stat">3 bins</div><p>most municipal systems now expect — wet, dry, hazardous — which confuses residents</p></div>
+      <div class="card"><div class="stat">0</div><p>simple, always-available tools most households have to check what goes where</p></div>
+    </div>
+    <div class="card solid" style="margin-top:16px;">
+      <p><strong style="color:#97BC62;">What I noticed:</strong> watching my own family hesitate over the bin at home, I realised the issue isn't laziness — nobody has an easy way to check the right bin in the moment.</p>
+    </div>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">WHO THIS IS FOR</span>
+    <h2 class="title">Four groups who feel this daily</h2>
+    <hr class="rule">
+    <div class="grid2">
+      <div class="card"><div class="icon-row"><div class="icon-circle">⌂</div><div><h3>Households &amp; Residents</h3><p>Need a quick answer: "which bin does this go in?"</p></div></div></div>
+      <div class="card"><div class="icon-row"><div class="icon-circle">♻</div><div><h3>Housing Societies &amp; RWAs</h3><p>Rolling out source segregation, want fewer contamination complaints.</p></div></div></div>
+      <div class="card"><div class="icon-row"><div class="icon-circle">⚑</div><div><h3>Municipal Waste Teams</h3><p>Benefit when cleaner, pre-sorted waste reaches collection points.</p></div></div></div>
+      <div class="card"><div class="icon-row"><div class="icon-circle">✎</div><div><h3>Schools &amp; Students</h3><p>Use it as a teaching aid to build sustainable habits early.</p></div></div></div>
+    </div>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">DESIGN THINKING APPROACH</span>
+    <h2 class="title">Five stages, one habit problem</h2>
+    <hr class="rule">
+    <ul class="clean">
+      <li><strong>Empathize</strong> — I asked people around me why sorting waste feels confusing and slow.</li>
+      <li><strong>Define</strong> — The real problem: no quick way to check the correct bin in the moment.</li>
+      <li><strong>Ideate</strong> — I explored a few ideas and landed on a conversational AI assistant.</li>
+      <li><strong>Prototype</strong> — I designed a chat + image-based flow backed by a municipal-rules knowledge base.</li>
+      <li><strong>Test &amp; Refine</strong> — I reviewed sample chats with mentors and refined the tone.</li>
+    </ul>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">AI SOLUTION OVERVIEW</span>
+    <h2 class="title">From a question to a grounded answer</h2>
+    <hr class="rule">
+    <div class="flow">
+      <div class="step"><div class="num">1</div><h3 style="margin:0 0 6px;font-size:15px;">User Input</h3><p class="muted" style="font-size:13px;">Resident types or photographs an item.</p></div>
+      <div class="step"><div class="num">2</div><h3 style="margin:0 0 6px;font-size:15px;">Understand</h3><p class="muted" style="font-size:13px;">Multimodal prompt + entity extraction identifies the item.</p></div>
+      <div class="step"><div class="num">3</div><h3 style="margin:0 0 6px;font-size:15px;">Retrieve Rules</h3><p class="muted" style="font-size:13px;">RAG pipeline looks up the correct local rule.</p></div>
+      <div class="step"><div class="num">4</div><h3 style="margin:0 0 6px;font-size:15px;">Respond</h3><p class="muted" style="font-size:13px;">Returns the bin, the reason, and a disposal tip.</p></div>
+    </div>
+    <p class="muted" style="margin-top:18px; font-size:13.5px;"><strong style="color:var(--forest);">AI components:</strong> Prompt engineering · Multimodal input · Entity extraction · Retrieval-Augmented Generation (RAG)</p>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">PROTOTYPE</span>
+    <h2 class="title">Try the live demo</h2>
+    <hr class="rule">
+    <p class="lead">I built a working chat prototype — type a household item and it tells you the bin and the reason, the same logic shown in the AI solution overview.</p>
+    <a class="cta-link" href="https://claude.ai/artifact/3sSNPrBN7KTUhd8kfLUNie" target="_blank" rel="noopener">Open the live prototype →</a>
+    <p class="muted" style="margin-top:18px; font-size:13px;">Current form: rule-based conversational demo. Image-upload identification and a full municipal-rules dataset are the planned next iteration.</p>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">RESPONSIBLE AI CONSIDERATIONS</span>
+    <h2 class="title">Non-negotiables, not afterthoughts</h2>
+    <hr class="rule">
+    <div class="grid2">
+      <div class="card"><h3>Fairness</h3><p>Rules sourced across urban and semi-urban contexts so advice isn't biased toward one city's system.</p></div>
+      <div class="card"><h3>Transparency</h3><p>Every answer states the reason for a bin choice, not just a bare instruction.</p></div>
+      <div class="card"><h3>Ethics</h3><p>The assistant only gives disposal guidance — it never collects or profiles user data.</p></div>
+      <div class="card"><h3>Privacy</h3><p>No personal or location data is stored; sessions are stateless.</p></div>
+    </div>
+  </section>
+
+  <section class="slide light">
+    <span class="eyebrow">EXPECTED IMPACT</span>
+    <h2 class="title">Who benefits, and by how much</h2>
+    <hr class="rule">
+    <div class="grid2">
+      <ul class="clean">
+        <li><strong>Households:</strong> spend less time guessing; build lasting sorting habits.</li>
+        <li><strong>Municipalities:</strong> cleaner, better pre-sorted waste, cutting reprocessing cost.</li>
+        <li><strong>Environment:</strong> less recyclable material lost to landfill.</li>
+        <li><strong>Recycling workers:</strong> safer handling, fewer mixed hazardous items.</li>
+      </ul>
+      <div>
+        <div class="bars">
+          <div><div class="bar" style="height:80px;background:var(--forest-dark);">40%</div><div class="bar-label">Before</div></div>
+          <div><div class="bar" style="height:150px;background:var(--moss);">75%</div><div class="bar-label">After (pilot goal)</div></div>
+        </div>
+        <p class="muted" style="font-size:11.5px; font-style:italic;">Illustrative pilot targets, to be validated with real usage data.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide dark">
+    <span class="eyebrow">IMPACT STATEMENT</span>
+    <h2 class="title" style="color:#fff;">A two-second decision, compounding into real change</h2>
+    <hr class="rule">
+    <p class="lead">If adopted at community scale, EcoSort AI turns a confusing daily chore into a confident decision — cleaner waste streams, stronger recycling economics, and less pollution reaching landfills and waterways.</p>
+    <ul class="clean muted" style="margin-top:10px;">
+      <li>Small, practical AI can solve everyday sustainability friction.</li>
+      <li>Grounding responses in real municipal rules keeps the assistant trustworthy.</li>
+      <li>Designed with fairness, transparency, ethics, and privacy as requirements, not add-ons.</li>
+    </ul>
+    <p style="margin-top:auto; font-family:'Fraunces', serif; font-size:20px;">Thank you for reading.<br><span class="muted" style="font-size:14px;">— Komal</span></p>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="Previous slide">‹</button>
+  <div class="dots" id="dots"></div>
+  <span class="counter" id="counter">1 / 10</span>
+  <button id="next" aria-label="Next slide">›</button>
+</div>
+
+<script>
+(function () {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dotsWrap = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  let i = 0;
+
+  slides.forEach((_, idx) => {
+    const d = document.createElement('span');
+    d.addEventListener('click', () => go(idx));
+    dotsWrap.appendChild(d);
+  });
+
+  function render() {
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    Array.from(dotsWrap.children).forEach((d, idx) => d.classList.toggle('on', idx === i));
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    document.getElementById('prev').disabled = i === 0;
+    document.getElementById('next').disabled = i === slides.length - 1;
+  }
+
+  function go(idx) {
+    i = Math.max(0, Math.min(slides.length - 1, idx));
+    render();
+  }
+
+  document.getElementById('prev').addEventListener('click', () => go(i - 1));
+  document.getElementById('next').addEventListener('click', () => go(i + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(i + 1);
+    if (e.key === 'ArrowLeft') go(i - 1);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
